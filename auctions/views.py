@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -15,6 +16,7 @@ def index(request):
     return render(request, "auctions/index.html", context)
 
 
+@login_required
 def listing_form(request):
     form = ListingForm()
     if request.method == 'POST':
