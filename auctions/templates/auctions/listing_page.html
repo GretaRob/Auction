@@ -1,12 +1,12 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    {% for listing in listings%}
+    <h2>Listings: {{ listing.name }}</h2>
+
     <article class="shadow-lg card">
         <div class="card-group">
           <div class="article-metadata">
-            <a class="mr-2" href="{% url 'listing_page' listing.id %}">{{ listing.name }}</a>
+
             <small class="text-muted">{{ listing.date_added|date:"F d, Y" }}</small>
             <p>Price: $ {{ listing.price }}</p>
             <p>Category: {{ listing.category }}</p>
@@ -14,6 +14,6 @@
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
       </article>
-    {% endfor %}
+
 
 {% endblock %}

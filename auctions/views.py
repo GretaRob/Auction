@@ -28,6 +28,13 @@ def listing_form(request):
     return render(request, 'auctions/listing_form.html', context)
 
 
+@login_required
+def listing_page(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    context = {'listing': listing}
+    return render(request, 'auctions/listing_page.html', context)
+
+
 def login_view(request):
     if request.method == "POST":
 
