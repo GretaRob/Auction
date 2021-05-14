@@ -13,6 +13,8 @@ CHOICES = (
 class User(AbstractUser):
     pass
 
+# parent model
+
 
 class Listing(models.Model):
     name = models.CharField(max_length=200, blank=True)
@@ -24,3 +26,13 @@ class Listing(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+# child model
+
+
+class Comment(models.Model):
+    listing = models.ForeignKey(Listing, blank=True, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return str(self.listing)

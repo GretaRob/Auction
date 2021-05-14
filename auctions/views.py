@@ -4,14 +4,19 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import ListingForm
+from .forms import ListingForm, CommentForm
 
-from .models import User, Listing
+from .models import User, Listing, Comment
 
 
 def index(request):
+    listings = Listing.objects.all()
+    comments = []
+    for i in listings:
+        comments.append(i.comment_set.all())
     context = {
-        'listings': Listing.objects.all()
+        'listings': listings,
+        'comments': comments
     }
     return render(request, "auctions/index.html", context)
 
@@ -29,8 +34,21 @@ def listing_form(request):
 
 
 @login_required
+def comment_form(request):
+    form = CommentForm()
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("index"))
+    context = {'form': form}
+    return render(request, 'auctions/comment_form.html', context)
+
+
+@login_required
 def listing_page(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
+
     context = {'listing': listing}
     return render(request, 'auctions/listing_page.html', context)
 

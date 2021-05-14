@@ -13,6 +13,15 @@
           </div>
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
+        {% for comment in comments %}
+        {% for objs in comment %}
+        {% if objs.listing == listing %}
+        
+        {{ objs.comment }}
+        <br>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
       </article>
     {% endfor %}
 
