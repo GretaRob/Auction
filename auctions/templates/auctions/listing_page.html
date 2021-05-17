@@ -14,7 +14,16 @@
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
         <a class="nav-link" href="{% url 'comment_form' %}">Leave Comment</a>
-
+        <p>Comments:</p>
+        {% for comment in comments %}
+        {% for objs in comment %}
+        {% if objs.listing == listing %}
+        
+        {{ objs.comment }}
+        <br>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
       </article>
 
 

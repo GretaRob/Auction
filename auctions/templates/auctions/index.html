@@ -13,6 +13,7 @@
           </div>
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
+        <p>Comments:</p>
         {% for comment in comments %}
         {% for objs in comment %}
         {% if objs.listing == listing %}

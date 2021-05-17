@@ -48,8 +48,16 @@ def comment_form(request):
 @login_required
 def listing_page(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
+    listings = Listing.objects.all()
+    comments = []
+    for i in listings:
+        comments.append(i.comment_set.all())
+    context = {
+        'listing': listing,
+        'listings': listings,
+        'comments': comments
+    }
 
-    context = {'listing': listing}
     return render(request, 'auctions/listing_page.html', context)
 
 
