@@ -36,3 +36,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return str(self.listing)
+
+# child model
+
+
+class Bid(models.Model):
+    listing = models.ForeignKey(Listing,  blank=True, on_delete=models.CASCADE)
+    bid = models.FloatField()
+
+    def __str__(self):
+        return str(self.listing)

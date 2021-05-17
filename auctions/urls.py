@@ -11,4 +11,6 @@ urlpatterns = [
     path('listing/<int:listing_id>/',
          views.listing_page, name='listing_page'),
     path("comment_form", views.comment_form, name="comment_form"),
+    path("bid_form", views.bid_form, name="bid_form"),
+]
 ]

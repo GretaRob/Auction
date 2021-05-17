@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import ListingForm, CommentForm
+from .forms import ListingForm, CommentForm, BidForm
 
 from .models import User, Listing, Comment
 
