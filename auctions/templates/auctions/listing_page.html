@@ -8,11 +8,24 @@
           <div class="article-metadata">
 
             <small class="text-muted">{{ listing.date_added|date:"F d, Y" }}</small>
+            <p>{{ listing.description }}</p>
             <p>Price: $ {{ listing.price }}</p>
             <p>Category: {{ listing.category }}</p>
           </div>
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
+        <form action="{% url 'listing_page' listing.id %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="bid">{{ listing.bids.count }} bid(s) so far. Your bid is the current bid</label>
+          </div>
+          <div class="form-group">
+            {{ form }}
+          </div>
+          <div class="form-group">
+            <input type="submit" name="button" class="btn btn-primary" value="Place Bid">
+          </div>
+        </form>
         <a class="nav-link" href="{% url 'comment_form' %}">Leave Comment</a>
         <p>Comments:</p>
         {% for comment in comments %}
