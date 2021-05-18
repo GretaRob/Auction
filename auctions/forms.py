@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from datetime import date
-from .models import Listing, Comment, Bid
+from .models import Listing, Comment
 
 
 class ListingForm(ModelForm):
@@ -13,10 +13,4 @@ class ListingForm(ModelForm):
 class CommentForm(ModelForm):
     class Meta:
         model = Comment
-        fields = '__all__'
-
-
-class BidForm(ModelForm):
-    class Meta:
-        model = Bid
         fields = '__all__'
