@@ -65,8 +65,8 @@ def listing_page(request, listing_id):
             else:
                 price = request.POST["price"]
                 bids = listing.bids.all()
-                if user.username != listing.owner.username:  # only let those who dont own the listing be able to bid
-                    if price <= listing.price:
+                if user.username != listing.creator.username:  # only let those who dont own the listing be able to bid
+                    if int(price) <= int(listing.price):
                         return render(request, "auctions/listing_page.html", {
                             "listing": listing,
                             "form": BidForm(),
@@ -85,7 +85,7 @@ def listing_page(request, listing_id):
                         return render(request, 'auctions/listing_page.html', {
                             "form": form
                         })
-        return HttpResponseRedirect(reverse('listing', args=(listing.id)))
+        return HttpResponseRedirect(reverse('listing_page', args=(listing.id,)))
     else:
         return render(request, "auctions/listing_page.html", {
             "listing": listing,

@@ -14,9 +14,11 @@
           </div>
         </div>
         <img src="{{ listing.image }}" alt="" class="card-img-bottom">
+        <p>{{ message }}</p>
         <form action="{% url 'listing_page' listing.id %}" method="POST">
           {% csrf_token %}
           <div class="form-group">
+            
             <label for="bid">{{ listing.bids.count }} bid(s) so far. Your bid is the current bid</label>
           </div>
           <div class="form-group">
@@ -26,6 +28,22 @@
             <input type="submit" name="button" class="btn btn-primary" value="Place Bid">
           </div>
         </form>
+        <div>
+          <h4>Details</h4>
+          <ul>
+            <li>Listed by: {{ listing.creator }}</li>
+            <li>Category: {{ listing.category }}</li>
+            {% if listing.closed %}
+              <li><strong>Winner: </strong>{{ listing.bids.last.user.username }}</li>
+            {% endif %}
+          </ul>
+          {% if user.username == listing.creator.username and not listing.closed %}
+          <form action="{% url 'listing_page' listing.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" name="button" class="btn btn-danger" value="Close">Close</button>
+          </form>
+          {% endif %}
+        </div>
         <a class="nav-link" href="{% url 'comment_form' listing.id %}">Leave Comment</a>
         <p>Comments:</p>
         {% for comment in listing.comments.all %}
