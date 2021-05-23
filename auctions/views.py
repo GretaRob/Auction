@@ -4,19 +4,15 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import ListingForm, CommentForm
+from .forms import ListingForm, CommentForm, BidForm
 
-from .models import User, Listing, Comment
+from .models import User, Listing, Comment, Bid
 
 
 def index(request):
     listings = Listing.objects.all()
-    comments = []
-    for i in listings:
-        comments.append(i.comment_set.all())
     context = {
-        'listings': listings,
-        'comments': comments
+        'listings': listings
     }
     return render(request, "auctions/index.html", context)
 
@@ -25,40 +21,77 @@ def index(request):
 def listing_form(request):
     form = ListingForm()
     if request.method == 'POST':
+        user = User.objects.get(username=request.user)
         form = ListingForm(request.POST)
         if form.is_valid():
-            form.save()
+            # doesn't save right away in database
+            listing = form.save(commit=False)
+            listing.creator = user
+            listing.save()
             return HttpResponseRedirect(reverse("index"))
     context = {'form': form}
     return render(request, 'auctions/listing_form.html', context)
 
 
 @login_required
-def comment_form(request):
+def comment_form(request, listing_id):
+    user = User.objects.get(username=request.user)
+    listing = Listing.objects.get(id=listing_id)
     form = CommentForm()
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
-            form.save()
+            comment = form.save(commit=False)
+            comment.user = user
+            comment.save()
+            listing.comments.add(comment)
+            listing.save()
             return HttpResponseRedirect(reverse("index"))
-    context = {'form': form}
+    context = {'form': form,
+               'listing_id': listing.id}
     return render(request, 'auctions/comment_form.html', context)
 
 
 @login_required
 def listing_page(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
-    listings = Listing.objects.all()
-    comments = []
-    for i in listings:
-        comments.append(i.comment_set.all())
-    context = {
-        'listing': listing,
-        'listings': listings,
-        'comments': comments
-    }
+    if request.method == "POST":
+        user = User.objects.get(username=request.user)
 
-    return render(request, 'auctions/listing_page.html', context)
+        if not listing.closed:
+            if request.POST.get("button") == "Close":
+                listing.closed = True
+                listing.save()
+            else:
+                price = request.POST["price"]
+                bids = listing.bids.all()
+                if user.username != listing.owner.username:  # only let those who dont own the listing be able to bid
+                    if price <= listing.price:
+                        return render(request, "auctions/listing_page.html", {
+                            "listing": listing,
+                            "form": BidForm(),
+                            "message": "Error! Invalid bid amount!"
+                        })
+                    form = BidForm(request.POST)
+                    if form.is_valid():
+                        # clean up this
+                        bid = form.save(commit=False)
+                        bid.user = user
+                        bid.save()
+                        listing.bids.add(bid)
+                        listing.price = price
+                        listing.save()
+                    else:
+                        return render(request, 'auctions/listing_page.html', {
+                            "form": form
+                        })
+        return HttpResponseRedirect(reverse('listing', args=(listing.id)))
+    else:
+        return render(request, "auctions/listing_page.html", {
+            "listing": listing,
+            "form": BidForm(),
+            "message": ""
+        })
 
 
 def login_view(request):

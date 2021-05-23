@@ -10,6 +10,7 @@ urlpatterns = [
     path("listing_form", views.listing_form, name="listing_form"),
     path('listing/<int:listing_id>/',
          views.listing_page, name='listing_page'),
-    path("comment_form", views.comment_form, name="comment_form"),
+    path("comment_form/<int:listing_id>/",
+         views.comment_form, name="comment_form"),
 
 ]
