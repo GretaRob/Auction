@@ -12,5 +12,8 @@ urlpatterns = [
          views.listing_page, name='listing_page'),
     path("comment_form/<int:listing_id>/",
          views.comment_form, name="comment_form"),
-
+    path("watchlist", views.watchlist, name="watchlist"),
+    path("categories", views.categories, name="categories"),
+    path("categories/<str:category>/",
+         views.category_listings, name="category_listings"),
 ]

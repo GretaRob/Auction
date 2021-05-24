@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+    {% for listing in watchlist%}
+    <article class="shadow-lg card">
+        <div class="card-group">
+          <div class="article-metadata">
+            <a class="mr-2" href="{% url 'listing_page' listing.listing.id %}">{{ listing.listing.name }}</a>
+            <small class="text-muted">{{ listing.listing.date_added|date:"F d, Y" }}</small>
+            <p>Price: $ {{ listing.listing.price }}</p>
+            <p>Category: {{ listing.listing.category }}</p>
+          </div>
+        </div>
+        <img src="{{ listing.listing.image }}" alt="" class="card-img-bottom">
+      </article>
+    {% endfor %}
+
+{% endblock %}

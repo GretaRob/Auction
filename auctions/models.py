@@ -1,8 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.deletion import CASCADE
 
 CHOICES = (
-    ('fasion', 'Fashion'),
+    ('fashion', 'Fashion'),
     ('toys', 'Toys'),
     ('electronics', 'Electronics'),
     ('home', 'Home'),
@@ -50,3 +51,13 @@ class Listing(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='watchlist')
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name='listings')
+
+    def __str__(self):
+        return f"{self.user.username} listed {self.listing.id}"

@@ -4,9 +4,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.datastructures import MultiValueDictKeyError
 from .forms import ListingForm, CommentForm, BidForm
-
-from .models import User, Listing, Comment, Bid
+from .models import CHOICES, User, Listing, Comment, Bid, Watchlist
 
 
 def index(request):
@@ -54,16 +54,27 @@ def comment_form(request, listing_id):
 
 @login_required
 def listing_page(request, listing_id):
-    listing = Listing.objects.get(id=listing_id)
+    listing = Listing.objects.get(pk=listing_id)
     if request.method == "POST":
         user = User.objects.get(username=request.user)
-
+        if request.POST.get('button') == "Watchlist":
+            if not user.watchlist.filter(listing=listing):
+                watchlist = Watchlist()
+                watchlist.user = user
+                watchlist.listing = listing
+                watchlist.save()
+            else:
+                user.watchlist.filter(listing=listing).delete()
+            return HttpResponseRedirect(reverse('listing_page', args=(listing.id,)))
         if not listing.closed:
             if request.POST.get("button") == "Close":
                 listing.closed = True
                 listing.save()
             else:
-                price = request.POST["price"]
+                try:
+                    price = request.POST["price"]
+                except MultiValueDictKeyError:
+                    price = False
                 bids = listing.bids.all()
                 if user.username != listing.creator.username:  # only let those who dont own the listing be able to bid
                     if int(price) <= int(listing.price):
@@ -92,6 +103,32 @@ def listing_page(request, listing_id):
             "form": BidForm(),
             "message": ""
         })
+
+
+@login_required
+def watchlist(request):
+    user = User.objects.get(username=request.user)
+    watchlist = user.watchlist.all()
+    context = {
+        'watchlist': watchlist
+    }
+    return render(request, "auctions/watchlist.html", context)
+
+
+@login_required
+def categories(request):
+    return render(request, 'auctions/categories.html', {'categories': CHOICES})
+
+
+@login_required
+def category_listings(request, category):
+    listings = Listing.objects.filter(category__in=category[0])
+    c = dict(CHOICES)
+    context = {
+        'listings': listings,
+        'category': c[category]
+    }
+    return render(request, 'auctions/category_listings.html', context)
 
 
 def login_view(request):
